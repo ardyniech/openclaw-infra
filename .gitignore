@@ -1,0 +1,16 @@
+# Sensitive files – NEVER commit
+*.key
+*.pem
+credentials/
+secrets/
+tokens/
+botToken.txt
+openclaw.json
+
+# Backup archives (large binaries)
+*.tar.gz
+
+# Logs and temporary
+logs/
+*.log
+tmp/
