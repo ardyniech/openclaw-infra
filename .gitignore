@@ -14,3 +14,7 @@ openclaw.json
 logs/
 *.log
 tmp/
+
+# Autonomous runtime state (keep config.json)
+src/*.json
+!src/config.json
