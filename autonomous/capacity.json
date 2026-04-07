@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-04-07T14:04:42.809Z",
+  "current": {
+    "cpu": 1.3,
+    "ram": 17.4,
+    "disk": 59.4,
+    "health_score": 71
+  },
+  "forecast": {
+    "disk_growth_percent_per_day": 35.54,
+    "days_until_disk_full": 2
+  }
+}

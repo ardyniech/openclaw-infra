@@ -1,0 +1,44 @@
+{
+  "timestamp": 1775567020689,
+  "predictions": [],
+  "decisions": [
+    "No active predictions: using default allocations"
+  ],
+  "actions": [
+    {
+      "action": "renice",
+      "pattern": "sample_ml_agent.py",
+      "value": 19,
+      "success": true,
+      "affected": 1
+    },
+    {
+      "action": "renice",
+      "pattern": "torch",
+      "value": 19,
+      "success": true,
+      "affected": 1
+    },
+    {
+      "action": "renice",
+      "pattern": "transformers",
+      "value": 19,
+      "success": true,
+      "affected": 1
+    },
+    {
+      "action": "ionice",
+      "target": "openclaw-gateway",
+      "value": 4,
+      "success": true,
+      "affected": 2
+    },
+    {
+      "action": "systemd",
+      "unit": "openclaw-gateway",
+      "cpuQuota": 50,
+      "memoryMax": 512,
+      "success": true
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # OpenClaw Autonomous System — Feature Inventory
 
-Last updated: 2026-04-07
+Last updated: 2026-04-08
 
 ## Core Infrastructure
 
@@ -46,14 +46,30 @@ Modules run under systemd user timer + persistent event watcher:
    - Triggers self-heal immediately on CRITICAL alerts
    - Runs as a persistent systemd service
 
-5. **Queue Processor** (`queue_processor.js`)
+5. **Capacity Planner** (`capacity_planner.js`)
+   - Forecasts disk growth using linear regression on health data
+   - Computes 0–100 health score (weighted CPU/RAM/disk)
+   - Auto-enqueues urgent tasks when disk fills in ≤3 days or health score <50
+   - Runs every 2 hours (configurable)
+
+6. **Profile Learner** (`profile_learner.js`)
+   - Analyzes chat history to learn user preferences (formality, tone, working hours)
+   - Adjusts notification quiet hours accordingly
+   - Runs once per day
+
+7. **Queue Enricher** (`queue_enricher.js`)
+   - Consumes predictions + capacity forecasts
+   - Automatically adds preventive tasks to `~/workspace/queue.md`
+   - Priority tags: `[!]` for urgent, `[ ]` for normal
+
+8. **Queue Processor** (`queue_processor.js`)
    - Batch-executes tasks from `~/workspace/queue.md`
    - Supports manual user tasks and system-enqueued tasks
    - Marks tasks as `[x]` (success) or `[!]` (failed)
    - Notification on completion summary
 
-6. **Orchestrator** (`orchestrator.js`)
-   - Runs predictor → tuner → logger → queue in sequence
+9. **Orchestrator** (`orchestrator.js`)
+   - Runs: predictor → tuner → logger → capacity → profile → enricher → queue
    - Triggered by `openclaw-autonomous.timer` every 5 minutes
    - Sends notifications (to `~/logs/notifications.log` for now)
 

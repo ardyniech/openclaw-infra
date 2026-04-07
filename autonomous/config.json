@@ -1,0 +1,52 @@
+{
+  "enabled": true,
+  "predictive": {
+    "enabled": true,
+    "windowDays": 7,
+    "thresholds": {
+      "diskUsage": 85,
+      "cpuLoad": 80,
+      "memoryUsage": 90,
+      "errorRate": 5
+    }
+  },
+  "tuner": {
+    "enabled": true,
+    "adjustmentIntervalHours": 24,
+    "targets": ["ml-training", "gateway", "health-cycle"],
+    "maxNice": 19,
+    "maxIonice": 7
+  },
+  "eventBus": {
+    "enabled": true,
+    "webhookPort": 1979,
+    "subscriptions": {
+      "health.degraded": ["tuner", "predictor"],
+      "log.error.spike": ["predictor", "logger"]
+    }
+  },
+  "logger": {
+    "enabled": true,
+    "decisionLog": "/var/log/openclaw/decisions.log",
+    "retentionDays": 90
+  },
+  "notifications": {
+    "telegram": {
+      "enabled": true,
+      "userId": "6959255696",
+      "cooldownMs": 300000,
+      "criticalCooldownMs": 60000
+    }
+  },
+  "profile": {
+    "enabled": true,
+    "updateIntervalHours": 24
+  },
+  "capacity": {
+    "enabled": true,
+    "updateIntervalHours": 2
+  },
+  "enricher": {
+    "enabled": true
+  }
+}
