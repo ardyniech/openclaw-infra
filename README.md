@@ -1,69 +1,146 @@
-# OpenClaw Autonomous Infrastructure
+# OpenClaw Autonomous System
 
-This repository contains the complete setup for a self-maintaining OpenClaw system, including:
+A portable, production‑ready package that adds full autonomous capabilities to any OpenClaw installation.
 
-- configuration files
-- systemd user units & timers
-- autonomous modules (Node.js)
-- migration & backup scripts
-- documentation
+- Predictive maintenance & self‑tuning
+- Task queue & auto‑enrichment
+- Capacity planning & health scoring
+- Telegram notifications (optional)
+- Backup, migration, and GitHub sync out of the box
 
-## Structure
+## Repository Structure
 
 ```
 .
-├── backup-and-migrate.sh     # Create full backup tarball
-├── restore-from-backup.sh    # Restore from backup on new machine
-├── github-sync.sh            # Auto-commit & push to GitHub (requires remote)
+├── src/                    # Core modules (Node.js)
+│   ├── predictor.js
+│   ├── tuner.js
+│   ├── capacity_planner.js
+│   ├── profile_learner.js
+│   ├── queue_enricher.js
+│   ├── queue_processor.js
+│   ├── event_watcher.js
+│   ├── logger.js
+│   ├── notifier.js
+│   ├── orchestrator.js
+│   └── config.json
+├── systemd/                # systemd user units
+│   ├── openclaw-autonomous.timer
+│   ├── openclaw-autonomous.service
+│   └── openclaw-eventwatcher.service
+├── scripts/                # Maintenance & sync
+│   ├── backup-and-migrate.sh
+│   ├── restore-from-backup.sh
+│   └── github-sync.sh
 ├── docs/
-│   ├── FEATURES.md          # Feature inventory (auto-updated)
-│   └── MIGRATION.md         # Step-by-step migration guide
-├── autonomous/              # Node modules (predictor, tuner, logger, etc.)
-├── systemd-user/            # systemd service & timer units
-├── config/                  # config.json, sudoers snippet, crontab
-└── scripts/                 # health_cycle.sh, log_rotate.sh, backup_config.sh, etc.
+│   ├── FEATURES.md        # Feature inventory (auto‑updated)
+│   ├── MIGRATION.md       # Step‑by‑step migration guide
+│   └── ARCHITECTURE.md    # System design
+├── installer/
+│   ├── install.sh
+│   ├── uninstall.sh
+│   └── upgrade.sh
+├── VERSION
+├── LICENSE
+└── CHANGELOG.md
 ```
 
-## Setup (First Time)
+## Quick Install
 
-1. Clone to `~/openclaw-infra`
-2. Run `./backup-and-migrate.sh` after installing OpenClaw to bootstrap backup dir
-3. Enable systemd units:
-   ```bash
-   systemctl --user daemon-reload
-   systemctl --user enable --now openclaw-autonomous.timer
-   systemctl --user enable --now openclaw-eventwatcher.service
-   ```
-4. Configure daily backup in crontab (already in `scripts/backup_config.sh` can be used)
+From a fresh machine with OpenClaw already installed:
+
+```bash
+# 1. Clone this repository
+git clone https://github.com/ardyniech/openclaw-autonomous.git ~/openclaw-autonomous
+cd ~/openclaw-autonomous
+
+# 2. Run installer
+./installer/install.sh
+```
+
+The installer will:
+
+- Copy files to `~/openclaw-autonomous`
+- Create symlink `~/.openclaw/autonomous` → `~/openclaw-autonomous/src`
+- Install systemd user units to `~/.config/systemd/user/`
+- Enable lingering (so services start without login)
+- Create agent definition for Deina
+- Start the autonomous timer and event watcher
+
+After install, verify:
+
+```bash
+systemctl --user status openclaw-autonomous.timer
+systemctl --user status openclaw-eventwatcher.service
+```
+
+## How It Works
+
+- **Orchestrator** runs every 5 minutes via systemd timer, sequentially executing:
+  predictor → tuner → logger → capacity → profile → enricher → queue
+- **EventWatcher** runs continuously, polls latest health JSON every 10 seconds, triggers immediate self‑heal on CRITICAL alerts.
+- **Queue Processor** executes tasks from `~/.openclaw/workspace/queue.md` (manual or system enqueued).
+- **Notifications** are sent to Telegram (if configured) respecting quiet hours from USER_PROFILE.
+
+## User Workspace
+
+Runtime data lives under `~/.openclaw/workspace/`:
+
+- `logs/` – health, reports, autonomous logs
+- `queue.md` – task queue (batch processing)
+- `memory/` – daily notes and USER_PROFILE.json
 
 ## Backup & Migration
 
-- Daily full backups are stored in `~/openclaw-backup/` by `backup_config.sh` (cron)
-- For major upgrades/moves, use `./backup-and-migrate.sh` to create a migration tarball
-- Restore on new machine: extract tarball then run `restore-from-backup.sh`
+- Daily backups (tarballs) are created by `scripts/backup-and-migrate.sh` (cron) into `~/openclaw-backup/`.
+- To migrate to a new machine, copy the latest tarball and run `scripts/restore-from-backup.sh`.
+- The install script can also be used on a new machine to bootstrap the autonomous engine.
 
 ## GitHub Sync
 
-1. Create a private repository on GitHub.
-2. Add it as remote:
-   ```bash
-   cd ~/openclaw-infra
-   git remote add origin git@github.com:yourname/yourrepo.git
-   git push -u origin main
-   ```
-3. Enable daily auto-sync by adding to crontab:
-   ```bash
-   0 3 * * * /home/ardy/openclaw-infra/github-sync.sh
-   ```
+To keep this repository up to date across machines:
 
-**Important:** Sensitive data (tokens, keys) are excluded via `.gitignore`. Use environment variables or encrypted files for production secrets.
+```bash
+cd ~/openclaw-autonomous
+git remote add origin git@github.com:yourname/yourrepo.git
+git push -u origin main
 
-## Maintenance
+# Optional: daily auto-sync (cron)
+(crontab -l; echo "0 3 * * * ${HOME}/openclaw-autonomous/scripts/github-sync.sh") | crontab -
+```
 
-- FEATURES.md is updated automatically as the system evolves.
-- Check services with `systemctl --user status openclaw-*`
-- Logs: `~/.openclaw/workspace/logs/`
+## Upgrading
+
+```bash
+cd ~/openclaw-autonomous
+./installer/upgrade.sh
+```
+
+The upgrade script performs a backup, pulls latest from Git, reloads systemd and restarts services.
+
+## Uninstall
+
+```bash
+cd ~/openclaw-autonomous
+./installer/uninstall.sh
+```
+
+Note: this preserves `~/.openclaw/workspace` and `~/openclaw-backup/` in case you want to keep logs and backups.
+
+## Configuration
+
+- Autonomous modules config: `~/openclaw-autonomous/src/config.json`
+- OpenClaw core config: `~/.openclaw/openclaw.json`
+- Telegram notifications require `botToken` in core config and `userId` in autonomous config.
+
+## Development
+
+Modules are plain Node.js scripts. To add a new module, edit `src/` and integrate it into `orchestrator.js`.
+
+## License
+
+MIT
 
 ---
 
-Built by Deina, your autonomous machine caretaker.
+Built for Deina — your autonomous machine caretaker.

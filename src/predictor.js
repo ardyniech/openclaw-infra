@@ -133,7 +133,7 @@ function main() {
       const highRisk = predictions.filter(p => p.probability >= 80);
       if (highRisk.length > 0) {
         try {
-          execSync(`node ${NOTIFIER} predictor '${JSON.stringify({ predictions: highRisk })}'`, { stdio: 'ignore' });
+          execSync(`node ${NOTIFIER} predictor '${JSON.stringify({ predictions: highRisk })}' critical`, { stdio: 'ignore' });
         } catch (e) {}
       }
     }

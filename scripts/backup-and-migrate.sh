@@ -5,7 +5,7 @@
 set -euo pipefail
 
 BACKUP_DIR="$HOME/openclaw-backup"
-INFRA_DIR="$HOME/openclaw-infra"
+INFRA_DIR="$HOME/openclaw-autonomous"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILE="$BACKUP_DIR/openclaw-migration-${TIMESTAMP}.tar.gz"
 

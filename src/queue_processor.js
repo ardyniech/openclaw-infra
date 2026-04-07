@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const QUEUE_PATH = path.join(__dirname, '..', 'workspace', 'queue.md');
+const QUEUE_PATH = path.join(process.env.HOME, '.openclaw', 'workspace', 'queue.md');
 const LOG_DIR = path.join(__dirname, '..', 'workspace', 'logs', 'queue');
 const NOTIFIER = path.join(__dirname, 'notifier.js');
 
@@ -55,6 +55,7 @@ function runTask(command) {
 function main() {
   try {
     ensureLogDir();
+    console.log('[Queue] Using queue file:', QUEUE_PATH);
     const lines = readQueue();
     const tasks = parseTasks(lines);
     if (tasks.length === 0) {

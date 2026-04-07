@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Auto-commit and push the openclaw-infra repository to GitHub
+# Auto-commit and push the openclaw-autonomous repository to GitHub
 # Run daily via cron (e.g., 3 AM) or after backup
 
 set -euo pipefail
 
-INFRA_DIR="${HOME}/openclaw-infra"
+INFRA_DIR="${HOME}/openclaw-autonomous"
 if [ ! -d "$INFRA_DIR" ]; then
   echo "Infra directory not found: $INFRA_DIR"
   exit 1

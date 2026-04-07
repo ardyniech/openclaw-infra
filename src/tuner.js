@@ -153,7 +153,7 @@ function main() {
     const failures = actions.filter(a => !a.success);
     if (failures.length > 0) {
       try {
-        execSync(`node ${NOTIFIER} tuner '${JSON.stringify({ message: 'Tuner actions failed', actions, failed: true })}'`, { stdio: 'ignore' });
+        execSync(`node ${NOTIFIER} tuner '${JSON.stringify({ message: 'Tuner actions failed', actions, failed: true })}' critical`, { stdio: 'ignore' });
       } catch (e) {}
     }
 
