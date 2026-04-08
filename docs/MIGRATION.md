@@ -8,7 +8,7 @@ This guide moves your entire autonomous OpenClaw installation from one machine t
 
 1. Create a fresh backup:
    ```bash
-   cd ~/openclaw-infra
+   cd ~/openclaw-autonomous
    ./backup-and-migrate.sh
    ```
    Output: `~/openclaw-backup/openclaw-migration-<timestamp>.tar.gz`

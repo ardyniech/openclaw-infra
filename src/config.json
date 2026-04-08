@@ -32,7 +32,7 @@
   },
   "notifications": {
     "telegram": {
-      "enabled": true,
+      "enabled": false,
       "userId": "6959255696",
       "cooldownMs": 300000,
       "criticalCooldownMs": 60000
