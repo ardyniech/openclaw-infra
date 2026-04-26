@@ -2,3 +2,5 @@ node_modules/
 src/orchestrator.log
 src/config.json
 .DS_Store
+src/config.json
+src/orchestrator.log
