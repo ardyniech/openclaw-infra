@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenClaw Autonomous Orchestrator
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/node /home/ardy/openclaw-autonomous/src/orchestrator.js
+StandardOutput=append:/home/ardy/.openclaw/workspace/logs/autonomous.log
+StandardError=append:/home/ardy/.openclaw/workspace/logs/autonomous.log
+
+[Install]
+WantedBy=default.target

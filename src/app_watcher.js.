@@ -1,0 +1,67 @@
+const { execSync } = require('child_process');
+const fs = require('fs');
+
+// Kamus "Penerjemah Bahasa Manusia" (Zero Token)
+const ERROR_DICTIONARY = {
+  "connection refused": "Dia mau ngobrol sama database/aplikasi lain, tapi pintunya dikunci atau aplikasinya belum bangun.",
+  "no such file": "Ada file yang ilang. Kayaknya kamu habis bersih-bersih dan gasengaja hapus file penting dia.",
+  "address already in use": "Ada aplikasi lain yang udah nempatin 'pintu' (port) yang sama. Mereka rebutan tempat.",
+  "out of memory": "VAIO kamu kehabisan napas (RAM penuh). Aplikasi ini terpaksa pingsan.",
+  "permission denied": "Dia mau buka folder tapi dilarang sama sistem. Masalah izin akses.",
+  "executable file not found": "Program utamanya nggak ketemu. Mungkin foldernya udah kamu hapus atau pindahin."
+};
+
+function autoDiscoverAndReport() {
+  try {
+    // 1. Tanya ke systemd: "Siapa aja yang lagi mati/error?"
+    // Kita filter agar tidak melaporkan sistem otonomnya sendiri
+    const rawUnits = execSync('systemctl --user list-units --type=service --state=failed,inactive --no-legend').toString();
+    const lines = rawUnits.trim().split('\n');
+    
+    let reports = [];
+
+    lines.forEach(line => {
+      const parts = line.trim().split(/\s+/);
+      const serviceName = parts[0];
+
+      // Skip kalau itu bagian dari sistem otonom kita sendiri
+      if (serviceName.includes('openclaw-')) return;
+
+      // 2. Ambil 3 baris log terakhir dari aplikasi yang bermasalah itu
+      const logs = execSync(`journalctl --user -u ${serviceName} -n 3 --no-pager`).toString();
+      
+      // 3. Terjemahkan ke bahasa manusia
+      let humanExplanation = "Gak tau pasti kenapa, tapi dia tiba-tiba berenti kerja.";
+      for (let [key, msg] of Object.entries(ERROR_DICTIONARY)) {
+        if (logs.toLowerCase().includes(key)) {
+          humanExplanation = msg;
+          break;
+        }
+      }
+
+      reports.push({
+        name: serviceName.replace('.service', ''),
+        status: parts[2], // failed atau inactive
+        reason: humanExplanation,
+        raw: logs.split('\n').pop() // Ambil baris error terakhir buat jaga-jaga
+      });
+    });
+
+    return reports;
+  } catch (e) {
+    return [];
+  }
+}
+
+// Format laporan untuk dikirim ke Telegram/Log
+const results = autoDiscoverAndReport();
+if (results.length > 0) {
+  console.log("=== LAPORAN PERABOTAN RUMAH ===");
+  results.forEach(res => {
+    console.log(`\n🏠 Projek: ${res.name}`);
+    console.log(`📌 Kondisi: ${res.status === 'failed' ? 'RUSAK/ERROR' : 'MATI/OFF'}`);
+    console.log(`💬 Analisa Deina: ${res.reason}`);
+  });
+} else {
+  console.log("Semua perabotan aman, gak ada yang mogok.");
+}

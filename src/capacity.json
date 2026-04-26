@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-04-26T07:18:16.619Z",
+  "current": {
+    "disk": 60,
+    "health_score": null
+  },
+  "forecast": {
+    "disk_growth_percent_per_day": 1440,
+    "days_until_disk_full": 1
+  }
+}

@@ -1,5 +1,7 @@
 {
   "enabled": true,
+  "telegram_token": "8349540248:AAEs0KlqQnjIInR_wCeBiqSqMQ92OJTu2YU",
+  "telegram_chat_id": "6959255696",
   "predictive": {
     "enabled": true,
     "windowDays": 7,
@@ -32,7 +34,7 @@
   },
   "notifications": {
     "telegram": {
-      "enabled": false,
+      "enabled": true,
       "userId": "6959255696",
       "cooldownMs": 300000,
       "criticalCooldownMs": 60000

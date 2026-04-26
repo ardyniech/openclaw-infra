@@ -1,20 +1,4 @@
-# Sensitive files – NEVER commit
-*.key
-*.pem
-credentials/
-secrets/
-tokens/
-botToken.txt
-openclaw.json
-
-# Backup archives (large binaries)
-*.tar.gz
-
-# Logs and temporary
-logs/
-*.log
-tmp/
-
-# Autonomous runtime state (keep config.json)
-src/*.json
-!src/config.json
+node_modules/
+src/orchestrator.log
+src/config.json
+.DS_Store

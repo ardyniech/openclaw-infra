@@ -1,0 +1,4 @@
+{
+  "success": false,
+  "error": "Command failed: Initial system check\n/bin/sh: 1: Initial: not found\n"
+}

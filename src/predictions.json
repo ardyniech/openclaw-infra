@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-04-26T08:28:45.932Z",
+  "predictions": [],
+  "metadata": {
+    "dataPoints": {
+      "disk": 3,
+      "cpu": 0,
+      "memory": 0
+    }
+  }
+}

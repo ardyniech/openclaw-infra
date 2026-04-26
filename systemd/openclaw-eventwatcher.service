@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenClaw Event Watcher (Self-Healing)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /home/ardy/openclaw-autonomous/src/event_watcher.js
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/ardy/.openclaw/workspace/logs/eventwatcher.log
+StandardError=append:/home/ardy/.openclaw/workspace/logs/eventwatcher.log
+
+[Install]
+WantedBy=default.target
